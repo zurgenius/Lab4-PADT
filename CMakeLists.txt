@@ -52,6 +52,11 @@ include(GoogleTest)
 
 add_executable(lab2_tests
     tests/tests.cpp
+    tests/lab4/ordinal_tests.cpp
+    tests/lab4/lazy_sequence_tests.cpp
+    tests/lab4/generator_tests.cpp
+    tests/lab4/stream_tests.cpp
+    tests/lab4/event_statistics_tests.cpp
 )
 set_target_properties(lab2_tests PROPERTIES OUTPUT_NAME tests_runner)
 target_include_directories(lab2_tests PRIVATE include)

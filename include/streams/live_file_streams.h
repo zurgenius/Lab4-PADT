@@ -1,0 +1,33 @@
+#pragma once
+
+#include "streams/base_streams.h"
+
+#include <fstream>
+#include <string>
+
+class LiveFileLineReadOnlyStream : public ReadOnlyStream<std::string> {
+  private:
+    std::string filename;
+    std::ifstream file;
+    int position;
+    bool opened;
+    bool ended;
+    int empty_polls;
+    int max_empty_polls;
+    int wait_ms;
+
+  public:
+    LiveFileLineReadOnlyStream(const std::string &filename, int max_empty_polls, int wait_ms);
+
+    bool is_end_of_stream() const override;
+    std::string read() override;
+    Option<std::string> try_read() override;
+    int get_position() const override;
+    bool can_seek() const override;
+    int seek(int index) override;
+    bool can_go_back() const override;
+    void open() override;
+    void close() override;
+};
+
+#include "streams/detail/live_file_streams.tpp"

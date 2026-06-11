@@ -1,0 +1,96 @@
+#pragma once
+
+#include "streams/file_streams.h"
+
+#include <stdexcept>
+
+inline FileLineReadOnlyStream::FileLineReadOnlyStream(const std::string &filename)
+    : filename(filename), position(0), opened(false), ended(false) {}
+
+inline bool FileLineReadOnlyStream::is_end_of_stream() const { return !opened || ended; }
+
+inline std::string FileLineReadOnlyStream::read() {
+    if (!opened) {
+        throw std::logic_error("File stream is closed");
+    }
+    std::string line;
+    if (!std::getline(file, line)) {
+        ended = true;
+        throw std::out_of_range("File stream is ended");
+    }
+    position++;
+    return line;
+}
+
+inline Option<std::string> FileLineReadOnlyStream::try_read() {
+    if (!opened || ended) {
+        return Option<std::string>::None();
+    }
+    std::string line;
+    if (!std::getline(file, line)) {
+        ended = true;
+        return Option<std::string>::None();
+    }
+    position++;
+    return Option<std::string>::Some(line);
+}
+
+inline int FileLineReadOnlyStream::get_position() const { return position; }
+
+inline bool FileLineReadOnlyStream::can_seek() const { return false; }
+
+inline int FileLineReadOnlyStream::seek(int) {
+    throw std::logic_error("File line stream cannot seek");
+}
+
+inline bool FileLineReadOnlyStream::can_go_back() const { return false; }
+
+inline void FileLineReadOnlyStream::open() {
+    close();
+    file.open(filename.c_str());
+    if (!file.is_open()) {
+        throw std::runtime_error("Cannot open file for reading");
+    }
+    position = 0;
+    opened = true;
+    ended = false;
+}
+
+inline void FileLineReadOnlyStream::close() {
+    if (file.is_open()) {
+        file.close();
+    }
+    opened = false;
+}
+
+inline FileLineWriteOnlyStream::FileLineWriteOnlyStream(const std::string &filename)
+    : filename(filename), position(0), opened(false) {}
+
+inline int FileLineWriteOnlyStream::write(const std::string &item) {
+    if (!opened) {
+        throw std::logic_error("File write stream is closed");
+    }
+    file << item << '\n';
+    file.flush();
+    position++;
+    return position;
+}
+
+inline int FileLineWriteOnlyStream::get_position() const { return position; }
+
+inline void FileLineWriteOnlyStream::open() {
+    close();
+    file.open(filename.c_str(), std::ios::out | std::ios::trunc);
+    if (!file.is_open()) {
+        throw std::runtime_error("Cannot open file for writing");
+    }
+    position = 0;
+    opened = true;
+}
+
+inline void FileLineWriteOnlyStream::close() {
+    if (file.is_open()) {
+        file.close();
+    }
+    opened = false;
+}

@@ -1,17 +1,45 @@
 #include "menu.h"
 
 #include "array_sequence.h"
+#include "lazy/lazy_sequence.h"
 #include "list_sequence.h"
+#include "streams/file_streams.h"
+#include "streams/live_file_streams.h"
+#include "tasks/event_statistics.h"
 #include "utils.h"
 
 #include <cstdlib>
 #include <iostream>
+#include <string>
 #include <stdexcept>
 
 const int kMaxSequences = 10;
 
 Sequence<int> *sequences[kMaxSequences];
 int sequence_count = 0;
+
+int natural_rule(const Sequence<int> &source) {
+    return source.get_count();
+}
+
+int plus_one_rule(const Sequence<int> &source) {
+    return source.get_last() + 1;
+}
+
+int times_ten_rule(const Sequence<int> &source) {
+    return source.get_last() + 10;
+}
+
+void print_lazy_prefix(const LazySequence<int> &sequence, int count) {
+    std::cout << "[";
+    for (int index = 0; index < count; index++) {
+        if (index > 0) {
+            std::cout << ", ";
+        }
+        std::cout << sequence.get(index);
+    }
+    std::cout << "]" << std::endl;
+}
 
 bool store_sequence(Sequence<int> *sequence) {
     if (sequence_count >= kMaxSequences) {
@@ -303,6 +331,123 @@ void menu_run_tests() {
     }
 }
 
+void menu_lab4_lazy_demo() {
+    int zero_data[] = {0};
+    int ten_data[] = {10};
+    int hundred_data[] = {100};
+    MutableArraySequence<int> zero_init(zero_data, 1);
+    MutableArraySequence<int> ten_init(ten_data, 1);
+    MutableArraySequence<int> hundred_init(hundred_data, 1);
+
+    LazySequence<int> naturals(natural_rule, zero_init);
+    LazySequence<int> tens(times_ten_rule, ten_init);
+    LazySequence<int> hundreds(plus_one_rule, hundred_init);
+
+    std::cout << "\nNaturals prefix: ";
+    print_lazy_prefix(naturals, 10);
+
+    LazySequence<int> *appended = naturals.append(999);
+    std::cout << "Append is lazy, prefix after append generator: ";
+    print_lazy_prefix(*appended, 10);
+
+    LazySequence<int> *inserted = naturals.insert_at(-1, 0);
+    std::cout << "Insert is lazy, prefix after insert generator: ";
+    print_lazy_prefix(*inserted, 10);
+
+    const LazySequence<int> *sources[] = {&naturals, &tens, &hundreds};
+    LazySequence<int> *interleaved = LazySequence<int>::interleave(sources, 3);
+    std::cout << "Interleave three infinite sequences: ";
+    print_lazy_prefix(*interleaved, 12);
+
+    LazySequence<int> *concat = naturals.concat(tens);
+    std::cout << "Concat length omega count: " << concat->get_length().get_omega_count()
+              << ", finite tail: " << concat->get_length().get_finite_count() << std::endl;
+    std::cout << "Concat value after first omega: "
+              << concat->get(OrdinalIndex::omega_plus(0)) << std::endl;
+
+    delete concat;
+    delete interleaved;
+    delete inserted;
+    delete appended;
+}
+
+void menu_lab4_statistics_demo() {
+    std::cout << "\nEnter protocol filename: ";
+    std::string filename;
+    std::cin >> filename;
+
+    try {
+        FileLineReadOnlyStream lines(filename);
+        OnlineEventStatistics<double> statistics =
+            ProtocolStatisticsTask<double>::process(lines);
+
+        std::cout << "Total: " << statistics.get_total_events() << std::endl;
+        std::cout << "Start: " << statistics.get_start_events() << std::endl;
+        std::cout << "End: " << statistics.get_end_events() << std::endl;
+        std::cout << "Measure: " << statistics.get_measure_events() << std::endl;
+        std::cout << "Error: " << statistics.get_error_events() << std::endl;
+        std::cout << "Unknown: " << statistics.get_unknown_events() << std::endl;
+
+        if (statistics.has_any_measurements()) {
+            std::cout << "Min: " << statistics.get_min_measure() << std::endl;
+            std::cout << "Max: " << statistics.get_max_measure() << std::endl;
+            std::cout << "Average: " << statistics.get_average_measure() << std::endl;
+            std::cout << "Variance: " << statistics.get_variance_measure() << std::endl;
+        }
+    } catch (const std::exception &e) {
+        std::cout << "Error: " << e.what() << std::endl;
+    }
+}
+
+void menu_lab4_live_demo() {
+    std::cout << "\nEnter live protocol filename: ";
+    std::string filename;
+    std::cin >> filename;
+
+    try {
+        LiveFileLineReadOnlyStream lines(filename, 20, 100);
+        EventReadOnlyStream<double> events(&lines);
+        OnlineEventStatistics<double> statistics =
+            EventBatchProcessingTask<double>::process(events, 3);
+
+        std::cout << "Live total: " << statistics.get_total_events() << std::endl;
+        std::cout << "Live measures: " << statistics.get_measure_events() << std::endl;
+        std::cout << "Live errors: " << statistics.get_error_events() << std::endl;
+    } catch (const std::exception &e) {
+        std::cout << "Error: " << e.what() << std::endl;
+    }
+}
+
+void menu_lab4() {
+    int choice = -1;
+    while (choice != 0) {
+        std::cout << "\n==== Lab4 Menu ====" << std::endl;
+        std::cout << "1. LazySequence demo" << std::endl;
+        std::cout << "2. Protocol statistics from file" << std::endl;
+        std::cout << "3. Live protocol statistics" << std::endl;
+        std::cout << "0. Back" << std::endl;
+        std::cout << "Choice: ";
+        utils::read_int(choice);
+
+        switch (choice) {
+        case 1:
+            menu_lab4_lazy_demo();
+            break;
+        case 2:
+            menu_lab4_statistics_demo();
+            break;
+        case 3:
+            menu_lab4_live_demo();
+            break;
+        case 0:
+            break;
+        default:
+            std::cout << "Invalid choice" << std::endl;
+            break;
+        }
+    }
+}
+
 void destroy_all() {
     for (int index = 0; index < sequence_count; index++) {
         delete sequences[index];
@@ -325,6 +470,7 @@ void run_menu() {
         std::cout << "9. Reduce (sum)" << std::endl;
         std::cout << "10. Slice" << std::endl;
         std::cout << "11. Run tests" << std::endl;
+        std::cout << "12. Lab4 lazy sequences and streams" << std::endl;
         std::cout << "0. Exit" << std::endl;
         std::cout << "Choice: ";
         utils::read_int(choice);
@@ -362,6 +508,9 @@ void run_menu() {
             break;
         case 11:
             menu_run_tests();
+            break;
+        case 12:
+            menu_lab4();
             break;
         case 0:
             break;
