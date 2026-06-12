@@ -1,5 +1,7 @@
 #pragma once
 
+#include "lazy/lazy_sequence.h"
+
 #include <stdexcept>
 
 // Создает генератор конечного префикса заданной длины.
@@ -24,7 +26,7 @@ template <class T> TakeGenerator<T>::~TakeGenerator() { delete source; }
 template <class T> bool TakeGenerator<T>::has_next() const { return position < count; }
 
 // Возвращает следующий элемент конечного префикса.
-template <class T> T TakeGenerator<T>::get_next() {
+template <class T> T TakeGenerator<T>::get_next(const Sequence<T> &) {
     T value = get_at(OrdinalIndex::finite(position));
     position++;
     return value;

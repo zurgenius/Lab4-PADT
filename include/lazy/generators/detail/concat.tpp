@@ -1,5 +1,7 @@
 #pragma once
 
+#include "lazy/lazy_sequence.h"
+
 // Создает генератор ленивой конкатенации двух последовательностей.
 template <class T>
 ConcatGenerator<T>::ConcatGenerator(const LazySequence<T> &first,
@@ -25,7 +27,7 @@ template <class T> bool ConcatGenerator<T>::has_next() const {
 }
 
 // Возвращает следующий элемент конкатенации.
-template <class T> T ConcatGenerator<T>::get_next() {
+template <class T> T ConcatGenerator<T>::get_next(const Sequence<T> &) {
     T value = get_at(OrdinalIndex::finite(position));
     position++;
     return value;

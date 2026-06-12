@@ -1,5 +1,7 @@
 #pragma once
 
+#include "lazy/lazy_sequence.h"
+
 #include <stdexcept>
 
 // Копирует источник, чтобы результат append жил независимо от исходной последовательности.
@@ -23,7 +25,7 @@ template <class T> bool AppendGenerator<T>::has_next() const {
 }
 
 // Возвращает следующий элемент результата append.
-template <class T> T AppendGenerator<T>::get_next() {
+template <class T> T AppendGenerator<T>::get_next(const Sequence<T> &) {
     if (!has_next()) {
         throw std::out_of_range("AppendGenerator has no next item");
     }

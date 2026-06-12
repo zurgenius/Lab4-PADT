@@ -1,5 +1,7 @@
 #pragma once
 
+#include "lazy/lazy_sequence.h"
+
 #include <stdexcept>
 
 // Создает генератор ленивой фильтрации источника.
@@ -28,7 +30,7 @@ template <class T> bool WhereGenerator<T>::has_next() const {
 }
 
 // Ищет и возвращает следующий элемент, удовлетворяющий предикату.
-template <class T> T WhereGenerator<T>::get_next() {
+template <class T> T WhereGenerator<T>::get_next(const Sequence<T> &) {
     while (has_next()) {
         T value = source->get(source_position++);
         if (predicate(value)) {

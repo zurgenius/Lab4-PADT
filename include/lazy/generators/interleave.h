@@ -15,7 +15,7 @@ template <class T> class InterleaveGenerator : public Generator<T> {
     ~InterleaveGenerator() override;
 
     bool has_next() const override;
-    T get_next() override;
+    T get_next(const Sequence<T> &history) override;
     Generator<T> *clone() const override;
     OrdinalLength get_length() const override;
     T get_at(const OrdinalIndex &index) const override;

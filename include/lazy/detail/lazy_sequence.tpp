@@ -1,5 +1,7 @@
 #pragma once
 
+#include "lazy/lazy_sequence.h"
+
 #include <stdexcept>
 
 // Создает пустую конечную ленивую последовательность.
@@ -58,7 +60,7 @@ LazySequence<T>::LazySequence(T (*rule)(const Sequence<T> &source),
     for (int index = 0; index < initial_values.get_count(); index++) {
         append_materialized(initial_values.get(index));
     }
-    generator = new RuleGenerator<T>(rule, &cache);
+    generator = new RuleGenerator<T>(rule);
 }
 
 // Принимает владение готовым генератором и использует размер кэша по умолчанию.
@@ -74,7 +76,6 @@ LazySequence<T>::LazySequence(Generator<T> *generator, int history_capacity)
     if (generator == nullptr) {
         throw std::invalid_argument("Generator cannot be nullptr");
     }
-    generator->bind_source(&cache);
 }
 
 // Копирует lazy-последовательность вместе с кэшем и клоном генератора.
@@ -83,7 +84,6 @@ LazySequence<T>::LazySequence(const LazySequence<T> &other)
     : cache(other.cache), generator(nullptr), length(other.length) {
     if (other.generator != nullptr) {
         generator = other.generator->clone();
-        generator->bind_source(&cache);
     }
 }
 
@@ -100,9 +100,6 @@ template <class T> LazySequence<T> &LazySequence<T>::operator=(const LazySequenc
     cache = other.cache;
     generator = new_generator;
     length = other.length;
-    if (generator != nullptr) {
-        generator->bind_source(&cache);
-    }
     return *this;
 }
 
@@ -132,7 +129,8 @@ template <class T> void LazySequence<T>::materialize_to(int index) const {
         if (generator == nullptr || !generator->has_next()) {
             throw std::out_of_range("Generator has no next item");
         }
-        append_materialized(generator->get_next());
+        // передаем кэш чтобы убрать bind_source, все генераторы кроме Rule игнорируют кэщ
+        append_materialized(generator->get_next(cache));
     }
 }
 

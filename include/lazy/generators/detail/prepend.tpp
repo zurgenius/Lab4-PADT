@@ -1,5 +1,7 @@
 #pragma once
 
+#include "lazy/lazy_sequence.h"
+
 #include <stdexcept>
 
 // Создает генератор, который добавляет один элемент перед источником.
@@ -23,7 +25,7 @@ template <class T> bool PrependGenerator<T>::has_next() const {
 }
 
 // Возвращает следующий элемент результата prepend.
-template <class T> T PrependGenerator<T>::get_next() {
+template <class T> T PrependGenerator<T>::get_next(const Sequence<T> &) {
     if (!has_next()) {
         throw std::out_of_range("PrependGenerator has no next item");
     }

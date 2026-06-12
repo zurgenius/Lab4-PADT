@@ -5,8 +5,6 @@
 
 template <class T> class Cache : public Sequence<T> {
   private:
-    template <class U> friend class LazySequence;
-
     DynamicArray<T> buffer;
     int capacity;
     int cached_count;
@@ -17,12 +15,13 @@ template <class T> class Cache : public Sequence<T> {
 
     // Переводит индекс последовательности в текущую ячейку кольцевого буфера.
     int physical_index(int logical_index) const;
+
+  public:
     int get_cache_count() const;
     int get_capacity() const;
     int get_first_index() const;
     int get_last_index() const;
 
-  public:
     Cache(int capacity = 50);
     Cache(const Cache<T> &other);
     // Нужен для присваивания LazySequence вместе с текущим окном кэша.

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "lazy/lazy_sequence.h"
+
 #include <stdexcept>
 
 // Создает генератор ленивого применения функции к источнику.
@@ -26,7 +28,7 @@ template <class T> bool MapGenerator<T>::has_next() const {
 }
 
 // Возвращает следующий отображенный элемент.
-template <class T> T MapGenerator<T>::get_next() {
+template <class T> T MapGenerator<T>::get_next(const Sequence<T> &) {
     T value = get_at(OrdinalIndex::finite(position));
     position++;
     return value;

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "lazy/lazy_sequence.h"
+
 #include <stdexcept>
 
 // Считает длину после вставки одной lazy-последовательности в другую.
@@ -52,7 +54,7 @@ template <class T> bool InsertSequenceGenerator<T>::has_next() const {
 }
 
 // Возвращает следующий элемент результата вставки последовательности.
-template <class T> T InsertSequenceGenerator<T>::get_next() {
+template <class T> T InsertSequenceGenerator<T>::get_next(const Sequence<T> &) {
     T value = get_at(OrdinalIndex::finite(position));
     position++;
     return value;

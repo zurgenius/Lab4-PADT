@@ -20,7 +20,7 @@ template <class T> class InsertItemGenerator : public Generator<T> {
     ~InsertItemGenerator() override;
 
     bool has_next() const override;
-    T get_next() override;
+    T get_next(const Sequence<T> &history) override;
     Generator<T> *clone() const override;
     OrdinalLength get_length() const override;
     T get_at(const OrdinalIndex &index) const override;

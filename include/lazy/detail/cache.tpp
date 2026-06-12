@@ -1,5 +1,7 @@
 #pragma once
 
+#include "lazy/cache.h"
+
 #include <stdexcept>
 
 // Создает пустой кольцевой кэш заданной вместимости.

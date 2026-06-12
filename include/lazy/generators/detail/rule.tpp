@@ -1,32 +1,31 @@
 #pragma once
 
+#include "lazy/generators/rule.h"
+
 #include <stdexcept>
 
 // Создает бесконечный генератор по рекуррентному правилу и истории.
 template <class T>
-RuleGenerator<T>::RuleGenerator(T (*rule)(const Sequence<T> &source),
-                                const Sequence<T> *source)
-    : rule(rule), source(source), position(source == nullptr ? 0 : source->get_count()) {
-    if (rule == nullptr || source == nullptr || source->get_count() == 0) {
-        throw std::invalid_argument("RuleGenerator needs rule and non-empty source");
+RuleGenerator<T>::RuleGenerator(T (*rule)(const Sequence<T> &source)) : rule(rule) {
+    if (rule == nullptr) {
+        throw std::invalid_argument("RuleGenerator needs rule");
     }
 }
 
-// Копирует правило и позицию без привязки к старой истории.
+// Копирует правило без привязки к внешнему кэшу.
 template <class T>
 RuleGenerator<T>::RuleGenerator(const RuleGenerator<T> &other)
-    : rule(other.rule), source(nullptr), position(other.position) {}
+    : rule(other.rule) {}
 
 // Правило всегда может вычислять следующий элемент.
 template <class T> bool RuleGenerator<T>::has_next() const { return true; }
 
 // Вычисляет следующий элемент по текущей истории.
-template <class T> T RuleGenerator<T>::get_next() {
-    if (source == nullptr) {
-        throw std::logic_error("RuleGenerator source is not bound");
+template <class T> T RuleGenerator<T>::get_next(const Sequence<T> &history) {
+    if (history.get_count() == 0) {
+        throw std::logic_error("RuleGenerator history is empty");
     }
-    position++;
-    return rule(*source);
+    return rule(history);
 }
 
 // Создает копию генератора правила.
@@ -45,11 +44,4 @@ template <class T> T RuleGenerator<T>::get_at(const OrdinalIndex &index) const {
         throw std::out_of_range("RuleGenerator supports finite indexes only");
     }
     throw std::logic_error("RuleGenerator get_at requires LazySequence memoization");
-}
-
-// Привязывает генератор правила к новой истории кэша.
-template <class T>
-void RuleGenerator<T>::bind_source(const Sequence<T> *new_source) {
-    source = new_source;
-    position = source == nullptr ? 0 : source->get_count();
 }

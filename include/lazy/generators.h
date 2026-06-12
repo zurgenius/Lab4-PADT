@@ -1,7 +1,8 @@
 #pragma once
 
-#include "lazy/generators/append.h"
 #include "lazy/generators/base.h"
+
+#include "lazy/generators/append.h"
 #include "lazy/generators/concat.h"
 #include "lazy/generators/insert_item.h"
 #include "lazy/generators/insert_sequence.h"

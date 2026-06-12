@@ -1,5 +1,7 @@
 #pragma once
 
+#include "lazy/lazy_sequence.h"
+
 #include <stdexcept>
 
 // Создает генератор кругового чередования нескольких lazy-источников.
@@ -53,7 +55,7 @@ template <class T> bool InterleaveGenerator<T>::has_next() const {
 }
 
 // Возвращает следующий элемент кругового чередования.
-template <class T> T InterleaveGenerator<T>::get_next() {
+template <class T> T InterleaveGenerator<T>::get_next(const Sequence<T> &) {
     T value = get_at(OrdinalIndex::finite(position));
     position++;
     return value;

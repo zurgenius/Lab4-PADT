@@ -1,5 +1,7 @@
 #pragma once
 
+#include "lazy/lazy_sequence.h"
+
 #include <stdexcept>
 
 // Считает длину после вставки одного элемента.
@@ -40,7 +42,7 @@ template <class T> bool InsertItemGenerator<T>::has_next() const {
 }
 
 // Возвращает следующий элемент результата вставки.
-template <class T> T InsertItemGenerator<T>::get_next() {
+template <class T> T InsertItemGenerator<T>::get_next(const Sequence<T> &) {
     T value = get_at(OrdinalIndex::finite(position));
     position++;
     return value;
