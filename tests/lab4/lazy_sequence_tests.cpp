@@ -1,6 +1,7 @@
 #include "lazy/lazy_sequence.h"
 
 #include <gtest/gtest.h>
+#include <type_traits>
 
 int next_natural_rule(const Sequence<int> &source) {
     return source.get_count();
@@ -16,6 +17,14 @@ int square_item(const int &item) {
 
 bool is_even_item(const int &item) {
     return item % 2 == 0;
+}
+
+int sum_items(const int &first, const int &second) {
+    return first + second;
+}
+
+TEST(LazySequenceTest, InheritsSequenceInterface) {
+    EXPECT_TRUE((std::is_base_of<Sequence<int>, LazySequence<int>>::value));
 }
 
 TEST(LazySequenceTest, ItemsConstructorStoresFiniteCount) {
@@ -180,4 +189,41 @@ TEST(LazySequenceTest, TakeMakesInfiniteSequenceFinite) {
 
     EXPECT_EQ(result->get_count(), 3);
     delete result;
+}
+
+TEST(LazySequenceTest, GetSubSequenceIsNotSupported) {
+    int items[] = {1, 2, 3};
+    LazySequence<int> sequence(items, 3);
+
+    EXPECT_THROW(sequence.get_sub_sequence(0, 1), std::logic_error);
+}
+
+TEST(LazySequenceTest, SequenceConcatIsNotSupported) {
+    int first_items[] = {1};
+    int second_items[] = {2};
+    LazySequence<int> first(first_items, 1);
+    LazySequence<int> second(second_items, 1);
+
+    EXPECT_THROW(first.concat(static_cast<const Sequence<int> *>(&second)), std::logic_error);
+}
+
+TEST(LazySequenceTest, ReduceIsNotSupported) {
+    int items[] = {1, 2};
+    LazySequence<int> sequence(items, 2);
+
+    EXPECT_THROW(sequence.reduce(sum_items, 0), std::logic_error);
+}
+
+TEST(LazySequenceTest, SliceIsNotSupported) {
+    int items[] = {1, 2, 3};
+    LazySequence<int> sequence(items, 3);
+
+    EXPECT_THROW(sequence.slice(0, 1), std::logic_error);
+}
+
+TEST(LazySequenceTest, EnumeratorIsNotSupported) {
+    int items[] = {1, 2};
+    LazySequence<int> sequence(items, 2);
+
+    EXPECT_THROW(sequence.get_enumerator(), std::logic_error);
 }

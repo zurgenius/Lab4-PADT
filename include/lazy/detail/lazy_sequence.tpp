@@ -152,7 +152,35 @@ template <class T> T LazySequence<T>::get(const OrdinalIndex &index) const {
     return generator->get_at(index);
 }
 
-template <class T> const T &LazySequence<T>::operator[](int index) const { return get(index); }
+template <class T> Option<T> LazySequence<T>::try_get_first() const {
+    try {
+        return Option<T>::Some(get_first());
+    } catch (const std::out_of_range &) {
+        return Option<T>::None();
+    } catch (const std::logic_error &) {
+        return Option<T>::None();
+    }
+}
+
+template <class T> Option<T> LazySequence<T>::try_get_last() const {
+    try {
+        return Option<T>::Some(get_last());
+    } catch (const std::out_of_range &) {
+        return Option<T>::None();
+    } catch (const std::logic_error &) {
+        return Option<T>::None();
+    }
+}
+
+template <class T> Option<T> LazySequence<T>::try_get(int index) const {
+    try {
+        return Option<T>::Some(get(index));
+    } catch (const std::out_of_range &) {
+        return Option<T>::None();
+    } catch (const std::logic_error &) {
+        return Option<T>::None();
+    }
+}
 
 template <class T> int LazySequence<T>::get_count() const {
     if (length.is_infinite()) {
@@ -177,17 +205,47 @@ template <class T> int LazySequence<T>::get_materialized_start() const {
 
 template <class T> bool LazySequence<T>::is_infinite() const { return length.is_infinite(); }
 
-template <class T> LazySequence<T> *LazySequence<T>::append(const T &item) const {
+template <class T> Sequence<T> *LazySequence<T>::get_sub_sequence(int, int) {
+    throw std::logic_error("get_sub_sequence() not supported on LazySequence");
+}
+
+template <class T> LazySequence<T> *LazySequence<T>::append(const T &item) {
     return new LazySequence<T>(new AppendGenerator<T>(*this, item), cache.get_capacity());
 }
 
-template <class T> LazySequence<T> *LazySequence<T>::prepend(const T &item) const {
+template <class T> LazySequence<T> *LazySequence<T>::prepend(const T &item) {
     return new LazySequence<T>(new PrependGenerator<T>(*this, item), cache.get_capacity());
 }
 
-template <class T> LazySequence<T> *LazySequence<T>::insert_at(const T &item, int index) const {
+template <class T> LazySequence<T> *LazySequence<T>::insert_at(const T &item, int index) {
     return new LazySequence<T>(new InsertItemGenerator<T>(*this, item, OrdinalIndex::finite(index)),
                                cache.get_capacity());
+}
+
+template <class T> Sequence<T> *LazySequence<T>::concat(const Sequence<T> *) {
+    throw std::logic_error("concat(Sequence*) not supported on LazySequence");
+}
+
+template <class T> LazySequence<T> *LazySequence<T>::map(T (*func)(const T &item)) {
+    return new LazySequence<T>(new MapGenerator<T>(*this, func), cache.get_capacity());
+}
+
+template <class T> LazySequence<T> *LazySequence<T>::where(bool (*predicate)(const T &item)) {
+    return new LazySequence<T>(new WhereGenerator<T>(*this, predicate), cache.get_capacity());
+}
+
+template <class T>
+T LazySequence<T>::reduce(T (*)(const T &first_elem, const T &second_elem), const T &) {
+    throw std::logic_error("reduce() not supported on LazySequence");
+}
+
+template <class T>
+Sequence<T> *LazySequence<T>::slice(int, int, const Sequence<T> *) {
+    throw std::logic_error("slice() not supported on LazySequence");
+}
+
+template <class T> IEnumerator<T> *LazySequence<T>::get_enumerator() const {
+    throw std::logic_error("get_enumerator() not supported on LazySequence");
 }
 
 template <class T>
@@ -199,14 +257,6 @@ LazySequence<T> *LazySequence<T>::insert_sequence_at(const LazySequence<T> &item
 
 template <class T> LazySequence<T> *LazySequence<T>::concat(const LazySequence<T> &other) const {
     return new LazySequence<T>(new ConcatGenerator<T>(*this, other), cache.get_capacity());
-}
-
-template <class T> LazySequence<T> *LazySequence<T>::map(T (*func)(const T &item)) const {
-    return new LazySequence<T>(new MapGenerator<T>(*this, func), cache.get_capacity());
-}
-
-template <class T> LazySequence<T> *LazySequence<T>::where(bool (*predicate)(const T &item)) const {
-    return new LazySequence<T>(new WhereGenerator<T>(*this, predicate), cache.get_capacity());
 }
 
 template <class T> LazySequence<T> *LazySequence<T>::take(int count) const {
