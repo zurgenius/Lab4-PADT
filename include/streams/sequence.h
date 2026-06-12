@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sequence.h"
+#include "../sequence.h"
 #include "streams/base.h"
 
 // Превращает конечную Sequence в поток последовательного чтения.
