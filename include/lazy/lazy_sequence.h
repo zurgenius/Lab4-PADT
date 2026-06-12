@@ -2,11 +2,12 @@
 
 #include "array_sequence.h"
 #include "lazy/generators.h"
+#include "lazy/cache.h"
 #include "sequence.h"
 
 template <class T> class LazySequence {
   private:
-    mutable MutableArraySequence<T> materialized;
+    mutable Cache<T> cache;
     Generator<T> *generator;
     OrdinalLength length;
 
@@ -14,11 +15,18 @@ template <class T> class LazySequence {
     void materialize_to(int index) const;
 
   public:
+    static const int kDefaultHistoryCapacity = 50;
+
     LazySequence();
     LazySequence(const T *items, int count);
+    LazySequence(const T *items, int count, int history_capacity);
     explicit LazySequence(const Sequence<T> &source);
+    LazySequence(const Sequence<T> &source, int history_capacity);
     LazySequence(T (*rule)(const Sequence<T> &source), const Sequence<T> &initial_values);
+    LazySequence(T (*rule)(const Sequence<T> &source), const Sequence<T> &initial_values,
+                 int history_capacity);
     explicit LazySequence(Generator<T> *generator);
+    LazySequence(Generator<T> *generator, int history_capacity);
     LazySequence(const LazySequence<T> &other);
     LazySequence<T> &operator=(const LazySequence<T> &other);
     ~LazySequence();
@@ -32,6 +40,8 @@ template <class T> class LazySequence {
     int get_count() const;
     OrdinalLength get_length() const;
     int get_materialized_count() const;
+    int get_history_capacity() const;
+    int get_materialized_start() const;
     bool is_infinite() const;
 
     LazySequence<T> *append(const T &item) const;

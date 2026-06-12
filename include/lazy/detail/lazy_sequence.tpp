@@ -2,13 +2,17 @@
 
 #include <stdexcept>
 
-
 template <class T>
-LazySequence<T>::LazySequence() : materialized(), generator(nullptr), length(OrdinalLength::finite(0)) {}
+LazySequence<T>::LazySequence()
+    : cache(kDefaultHistoryCapacity), generator(nullptr), length(OrdinalLength::finite(0)) {}
 
 template <class T>
 LazySequence<T>::LazySequence(const T *items, int count)
-    : materialized(), generator(nullptr), length(OrdinalLength::finite(count)) {
+    : LazySequence(items, count, kDefaultHistoryCapacity) {}
+
+template <class T>
+LazySequence<T>::LazySequence(const T *items, int count, int history_capacity)
+    : cache(history_capacity), generator(nullptr), length(OrdinalLength::finite(count)) {
     if (count < 0) {
         throw std::invalid_argument("Count cannot be negative");
     }
@@ -22,39 +26,54 @@ LazySequence<T>::LazySequence(const T *items, int count)
 
 template <class T>
 LazySequence<T>::LazySequence(const Sequence<T> &source)
-    : materialized(), generator(nullptr), length(OrdinalLength::finite(source.get_count())) {
+    : LazySequence(source, kDefaultHistoryCapacity) {}
+
+template <class T>
+LazySequence<T>::LazySequence(const Sequence<T> &source, int history_capacity)
+    : cache(history_capacity), generator(nullptr), length(OrdinalLength::finite(source.get_count())) {
     for (int index = 0; index < source.get_count(); index++) {
         append_materialized(source.get(index));
     }
 }
 
 template <class T>
-LazySequence<T>::LazySequence(T (*rule)(const Sequence<T> &source), const Sequence<T> &initial_values)
-    : materialized(), generator(nullptr), length(OrdinalLength::omega()) {
+LazySequence<T>::LazySequence(T (*rule)(const Sequence<T> &source),
+                              const Sequence<T> &initial_values)
+    : LazySequence(rule, initial_values, kDefaultHistoryCapacity) {}
+
+template <class T>
+LazySequence<T>::LazySequence(T (*rule)(const Sequence<T> &source),
+                              const Sequence<T> &initial_values, int history_capacity)
+    : cache(history_capacity), generator(nullptr), length(OrdinalLength::omega()) {
     if (initial_values.get_count() == 0) {
         throw std::invalid_argument("Initial values cannot be empty");
     }
     for (int index = 0; index < initial_values.get_count(); index++) {
         append_materialized(initial_values.get(index));
     }
-    generator = new RuleGenerator<T>(rule, &materialized);
+    generator = new RuleGenerator<T>(rule, &cache);
 }
 
 template <class T>
 LazySequence<T>::LazySequence(Generator<T> *generator)
-    : materialized(), generator(generator), length(generator == nullptr ? OrdinalLength::finite(0) : generator->get_length()) {
+    : LazySequence(generator, kDefaultHistoryCapacity) {}
+
+template <class T>
+LazySequence<T>::LazySequence(Generator<T> *generator, int history_capacity)
+    : cache(history_capacity), generator(generator),
+      length(generator == nullptr ? OrdinalLength::finite(0) : generator->get_length()) {
     if (generator == nullptr) {
         throw std::invalid_argument("Generator cannot be nullptr");
     }
-    generator->bind_materialized(&materialized);
+    generator->bind_source(&cache);
 }
 
 template <class T>
 LazySequence<T>::LazySequence(const LazySequence<T> &other)
-    : materialized(other.materialized), generator(nullptr), length(other.length) {
+    : cache(other.cache), generator(nullptr), length(other.length) {
     if (other.generator != nullptr) {
         generator = other.generator->clone();
-        generator->bind_materialized(&materialized);
+        generator->bind_source(&cache);
     }
 }
 
@@ -67,11 +86,11 @@ template <class T> LazySequence<T> &LazySequence<T>::operator=(const LazySequenc
         new_generator = other.generator->clone();
     }
     delete generator;
-    materialized = other.materialized;
+    cache = other.cache;
     generator = new_generator;
     length = other.length;
     if (generator != nullptr) {
-        generator->bind_materialized(&materialized);
+        generator->bind_source(&cache);
     }
     return *this;
 }
@@ -79,11 +98,7 @@ template <class T> LazySequence<T> &LazySequence<T>::operator=(const LazySequenc
 template <class T> LazySequence<T>::~LazySequence() { delete generator; }
 
 template <class T> void LazySequence<T>::append_materialized(const T &item) const {
-    Sequence<T> *result = materialized.append(item);
-    if (result != &materialized) {
-        delete result;
-        throw std::logic_error("LazySequence materialized storage is not mutable");
-    }
+    cache.push(item);
 }
 
 template <class T> void LazySequence<T>::materialize_to(int index) const {
@@ -93,7 +108,13 @@ template <class T> void LazySequence<T>::materialize_to(int index) const {
     if (length.is_finite() && index >= length.get_finite_count()) {
         throw std::out_of_range("Index is out of range");
     }
-    while (materialized.get_count() <= index) {
+    if (cache.contains(index)) {
+        return;
+    }
+    if (!cache.is_empty() && index < cache.get_first_index()) {
+        throw std::out_of_range("Index is outside LazySequence history cache");
+    }
+    while (cache.get_count() <= index) {
         if (generator == nullptr || !generator->has_next()) {
             throw std::out_of_range("Generator has no next item");
         }
@@ -115,7 +136,7 @@ template <class T> const T &LazySequence<T>::get_last() const {
 
 template <class T> const T &LazySequence<T>::get(int index) const {
     materialize_to(index);
-    return materialized.get(index);
+    return cache.get(index);
 }
 
 template <class T> T LazySequence<T>::get(const OrdinalIndex &index) const {
@@ -141,41 +162,55 @@ template <class T> int LazySequence<T>::get_count() const {
 }
 
 template <class T> OrdinalLength LazySequence<T>::get_length() const { return length; }
-template <class T> int LazySequence<T>::get_materialized_count() const { return materialized.get_count(); }
+
+template <class T> int LazySequence<T>::get_materialized_count() const {
+    return cache.get_cache_count();
+}
+
+template <class T> int LazySequence<T>::get_history_capacity() const {
+    return cache.get_capacity();
+}
+
+template <class T> int LazySequence<T>::get_materialized_start() const {
+    return cache.is_empty() ? 0 : cache.get_first_index();
+}
+
 template <class T> bool LazySequence<T>::is_infinite() const { return length.is_infinite(); }
 
 template <class T> LazySequence<T> *LazySequence<T>::append(const T &item) const {
-    return new LazySequence<T>(new AppendGenerator<T>(*this, item));
+    return new LazySequence<T>(new AppendGenerator<T>(*this, item), cache.get_capacity());
 }
 
 template <class T> LazySequence<T> *LazySequence<T>::prepend(const T &item) const {
-    return new LazySequence<T>(new PrependGenerator<T>(*this, item));
+    return new LazySequence<T>(new PrependGenerator<T>(*this, item), cache.get_capacity());
 }
 
 template <class T> LazySequence<T> *LazySequence<T>::insert_at(const T &item, int index) const {
-    return new LazySequence<T>(new InsertItemGenerator<T>(*this, item, OrdinalIndex::finite(index)));
+    return new LazySequence<T>(new InsertItemGenerator<T>(*this, item, OrdinalIndex::finite(index)),
+                               cache.get_capacity());
 }
 
 template <class T>
 LazySequence<T> *LazySequence<T>::insert_sequence_at(const LazySequence<T> &items,
                                                      const OrdinalIndex &index) const {
-    return new LazySequence<T>(new InsertSequenceGenerator<T>(*this, items, index));
+    return new LazySequence<T>(new InsertSequenceGenerator<T>(*this, items, index),
+                               cache.get_capacity());
 }
 
 template <class T> LazySequence<T> *LazySequence<T>::concat(const LazySequence<T> &other) const {
-    return new LazySequence<T>(new ConcatGenerator<T>(*this, other));
+    return new LazySequence<T>(new ConcatGenerator<T>(*this, other), cache.get_capacity());
 }
 
 template <class T> LazySequence<T> *LazySequence<T>::map(T (*func)(const T &item)) const {
-    return new LazySequence<T>(new MapGenerator<T>(*this, func));
+    return new LazySequence<T>(new MapGenerator<T>(*this, func), cache.get_capacity());
 }
 
 template <class T> LazySequence<T> *LazySequence<T>::where(bool (*predicate)(const T &item)) const {
-    return new LazySequence<T>(new WhereGenerator<T>(*this, predicate));
+    return new LazySequence<T>(new WhereGenerator<T>(*this, predicate), cache.get_capacity());
 }
 
 template <class T> LazySequence<T> *LazySequence<T>::take(int count) const {
-    return new LazySequence<T>(new TakeGenerator<T>(*this, count));
+    return new LazySequence<T>(new TakeGenerator<T>(*this, count), cache.get_capacity());
 }
 
 template <class T>

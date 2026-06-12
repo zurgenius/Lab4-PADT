@@ -46,6 +46,36 @@ TEST(LazySequenceTest, RepeatedGetDoesNotGrowMaterializedCache) {
     EXPECT_EQ(sequence.get_materialized_count(), materialized);
 }
 
+TEST(LazySequenceTest, GetKeepsOnlyConfiguredHistoryWindow) {
+    int items[] = {0};
+    MutableArraySequence<int> initial(items, 1);
+    LazySequence<int> sequence(next_natural_rule, initial, 50);
+
+    sequence.get(60);
+
+    EXPECT_EQ(sequence.get_materialized_start(), 11);
+    EXPECT_EQ(sequence.get_materialized_count(), 50);
+}
+
+TEST(LazySequenceTest, GetThrowsWhenIndexFellOutOfHistoryWindow) {
+    int items[] = {0};
+    MutableArraySequence<int> initial(items, 1);
+    LazySequence<int> sequence(next_natural_rule, initial, 50);
+    sequence.get(60);
+
+    EXPECT_THROW(sequence.get(10), std::out_of_range);
+}
+
+TEST(LazySequenceTest, ConstructorUsesCustomHistoryCapacity) {
+    int items[] = {0};
+    MutableArraySequence<int> initial(items, 1);
+    LazySequence<int> sequence(next_natural_rule, initial, 3);
+
+    sequence.get(5);
+
+    EXPECT_EQ(sequence.get_materialized_count(), 3);
+}
+
 TEST(LazySequenceTest, GetLastThrowsForInfiniteSequence) {
     int items[] = {0};
     MutableArraySequence<int> initial(items, 1);
@@ -112,7 +142,12 @@ TEST(LazySequenceTest, InterleaveReadsThreeInfiniteSourcesRoundRobin) {
 
     LazySequence<int> *result = LazySequence<int>::interleave(sources, 3);
 
+    EXPECT_EQ(result->get(0), 0);
+    EXPECT_EQ(result->get(1), 100);
+    EXPECT_EQ(result->get(2), 1000);
+    EXPECT_EQ(result->get(3), 1);
     EXPECT_EQ(result->get(4), 101);
+    EXPECT_EQ(result->get(5), 1001);
     delete result;
 }
 

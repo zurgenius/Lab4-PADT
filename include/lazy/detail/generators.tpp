@@ -11,7 +11,7 @@ template <class T> Option<T> Generator<T>::try_get_next() {
     return Option<T>::Some(get_next());
 }
 
-template <class T> void Generator<T>::bind_materialized(MutableArraySequence<T> *) {}
+template <class T> void Generator<T>::bind_source(const Sequence<T> *) {}
 
 template <class T> Generator<T>::~Generator() {}
 
@@ -56,7 +56,7 @@ template <class T> T SequenceGenerator<T>::get_at(const OrdinalIndex &index) con
 
 template <class T>
 RuleGenerator<T>::RuleGenerator(T (*rule)(const Sequence<T> &source),
-                                MutableArraySequence<T> *source)
+                                const Sequence<T> *source)
     : rule(rule), source(source), position(source == nullptr ? 0 : source->get_count()) {
     if (rule == nullptr || source == nullptr || source->get_count() == 0) {
         throw std::invalid_argument("RuleGenerator needs rule and non-empty source");
@@ -97,7 +97,7 @@ template <class T> T RuleGenerator<T>::get_at(const OrdinalIndex &index) const {
 }
 
 template <class T>
-void RuleGenerator<T>::bind_materialized(MutableArraySequence<T> *new_source) {
+void RuleGenerator<T>::bind_source(const Sequence<T> *new_source) {
     source = new_source;
     position = source == nullptr ? 0 : source->get_count();
 }
