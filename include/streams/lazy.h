@@ -1,7 +1,7 @@
 #pragma once
 
 #include "lazy/lazy_sequence.h"
-#include "streams/base_streams.h"
+#include "streams/base.h"
 
 // Читает LazySequence как поток, материализуя элементы только по мере чтения.
 template <class T> class LazyReadOnlyStream : public ReadOnlyStream<T> {
@@ -19,4 +19,4 @@ template <class T> class LazyReadOnlyStream : public ReadOnlyStream<T> {
     void close() override;
 };
 
-#include "streams/detail/lazy_streams.tpp"
+#include "streams/detail/lazy.tpp"

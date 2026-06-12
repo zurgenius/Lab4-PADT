@@ -3,8 +3,8 @@
 #include "array_sequence.h"
 #include "lazy/lazy_sequence.h"
 #include "list_sequence.h"
-#include "streams/file_streams.h"
-#include "streams/live_file_streams.h"
+#include "streams/file.h"
+#include "streams/live_file.h"
 #include "tasks/event_statistics.h"
 #include "utils.h"
 

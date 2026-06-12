@@ -1,7 +1,7 @@
 #pragma once
 
 #include "sequence.h"
-#include "streams/base_streams.h"
+#include "streams/base.h"
 
 // Превращает конечную Sequence в поток последовательного чтения.
 template <class T> class SequenceReadOnlyStream : public ReadOnlyStream<T> {
@@ -34,4 +34,4 @@ template <class T> class SequenceWriteOnlyStream : public WriteOnlyStream<T> {
     void close() override;
 };
 
-#include "streams/detail/sequence_streams.tpp"
+#include "streams/detail/sequence.tpp"

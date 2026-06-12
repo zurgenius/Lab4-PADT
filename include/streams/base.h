@@ -22,4 +22,4 @@ template <class T> class WriteOnlyStream {
     virtual ~WriteOnlyStream();
 };
 
-#include "streams/detail/base_streams.tpp"
+#include "streams/detail/base.tpp"

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "streams/base_streams.h"
+#include "streams/base.h"
 
 #include <fstream>
 #include <string>
@@ -40,4 +40,4 @@ class FileLineWriteOnlyStream : public WriteOnlyStream<std::string> {
     void close() override;
 };
 
-#include "streams/detail/file_streams.tpp"
+#include "streams/detail/file.tpp"

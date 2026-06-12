@@ -1,6 +1,6 @@
 #pragma once
 
-#include "streams/base_streams.h"
+#include "streams/base.h"
 
 #include <fstream>
 #include <string>
@@ -27,4 +27,4 @@ class LiveFileLineReadOnlyStream : public ReadOnlyStream<std::string> {
     void close() override;
 };
 
-#include "streams/detail/live_file_streams.tpp"
+#include "streams/detail/live_file.tpp"

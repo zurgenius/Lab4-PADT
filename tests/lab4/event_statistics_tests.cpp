@@ -1,5 +1,5 @@
 #include "array_sequence.h"
-#include "streams/sequence_streams.h"
+#include "streams/sequence.h"
 #include "tasks/event_statistics.h"
 
 #include <gtest/gtest.h>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "streams/lazy_streams.h"
+#include "streams/lazy.h"
 
 #include <stdexcept>
 

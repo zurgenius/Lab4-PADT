@@ -1,6 +1,6 @@
 #pragma once
 
-#include "streams/sequence_streams.h"
+#include "streams/sequence.h"
 
 #include <stdexcept>
 

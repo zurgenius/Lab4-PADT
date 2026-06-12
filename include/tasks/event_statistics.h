@@ -1,6 +1,6 @@
 #pragma once
 
-#include "streams/base_streams.h"
+#include "streams/base.h"
 
 #include <string>
 

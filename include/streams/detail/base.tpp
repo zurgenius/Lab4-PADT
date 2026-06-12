@@ -1,6 +1,6 @@
 #pragma once
 
-#include "streams/base_streams.h"
+#include "streams/base.h"
 
 // Безопасно читает элемент потока или возвращает None на конце.
 template <class T> Option<T> ReadOnlyStream<T>::try_read() {
