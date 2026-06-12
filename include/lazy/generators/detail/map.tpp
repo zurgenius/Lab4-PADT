@@ -27,8 +27,6 @@ template <class T> T MapGenerator<T>::get_next() {
     return value;
 }
 
-template <class T> void MapGenerator<T>::reset() { position = 0; }
-
 template <class T> Generator<T> *MapGenerator<T>::clone() const {
     return new MapGenerator<T>(*this);
 }

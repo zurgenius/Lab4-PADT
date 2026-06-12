@@ -54,8 +54,6 @@ template <class T> T InterleaveGenerator<T>::get_next() {
     return value;
 }
 
-template <class T> void InterleaveGenerator<T>::reset() { position = 0; }
-
 template <class T> Generator<T> *InterleaveGenerator<T>::clone() const {
     return new InterleaveGenerator<T>(*this);
 }

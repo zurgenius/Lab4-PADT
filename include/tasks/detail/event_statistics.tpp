@@ -117,10 +117,6 @@ template <class T> void OnlineEventStatistics<T>::add_event(const Event<T> &even
     }
 }
 
-template <class T> void OnlineEventStatistics<T>::clear() {
-    *this = OnlineEventStatistics<T>();
-}
-
 template <class T> int OnlineEventStatistics<T>::get_total_events() const {
     return total_events;
 }

@@ -33,8 +33,6 @@ template <class T> T WhereGenerator<T>::get_next() {
     throw std::out_of_range("WhereGenerator has no next item");
 }
 
-template <class T> void WhereGenerator<T>::reset() { source_position = 0; }
-
 template <class T> Generator<T> *WhereGenerator<T>::clone() const {
     return new WhereGenerator<T>(*this);
 }

@@ -14,7 +14,6 @@ template <class T> class RuleGenerator : public Generator<T> {
 
     bool has_next() const override;
     T get_next() override;
-    void reset() override;
     Generator<T> *clone() const override;
     OrdinalLength get_length() const override;
     T get_at(const OrdinalIndex &index) const override;

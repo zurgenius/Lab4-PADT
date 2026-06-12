@@ -68,7 +68,6 @@ template <class T> class OnlineEventStatistics {
     OnlineEventStatistics();
 
     void add_event(const Event<T> &event);
-    void clear();
 
     int get_total_events() const;
     int get_start_events() const;

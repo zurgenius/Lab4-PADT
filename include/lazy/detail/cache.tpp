@@ -83,13 +83,6 @@ template <class T> void Cache<T>::push(const T &item) {
     next_logical_index++;
 }
 
-template <class T> void Cache<T>::clear() {
-    cached_count = 0;
-    first_physical_index = 0;
-    first_logical_index = 0;
-    next_logical_index = 0;
-}
-
 template <class T> const T &Cache<T>::get_first() const {
     if (cached_count == 0) {
         throw std::out_of_range("Cache is empty");

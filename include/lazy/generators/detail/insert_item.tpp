@@ -40,8 +40,6 @@ template <class T> T InsertItemGenerator<T>::get_next() {
     return value;
 }
 
-template <class T> void InsertItemGenerator<T>::reset() { position = 0; }
-
 template <class T> Generator<T> *InsertItemGenerator<T>::clone() const {
     return new InsertItemGenerator<T>(*this);
 }

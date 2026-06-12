@@ -25,10 +25,6 @@ template <class T> T RuleGenerator<T>::get_next() {
     return rule(*source);
 }
 
-template <class T> void RuleGenerator<T>::reset() {
-    position = source == nullptr ? 0 : source->get_count();
-}
-
 template <class T> Generator<T> *RuleGenerator<T>::clone() const {
     return new RuleGenerator<T>(*this);
 }

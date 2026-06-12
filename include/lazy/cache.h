@@ -26,7 +26,6 @@ template <class T> class Cache : public Sequence<T> {
     int get_first_index() const;
     int get_last_index() const;
     void push(const T &item);
-    void clear();
 
     const T &get_first() const override;
     const T &get_last() const override;

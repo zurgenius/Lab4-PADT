@@ -27,8 +27,6 @@ template <class T> T AppendGenerator<T>::get_next() {
     return value;
 }
 
-template <class T> void AppendGenerator<T>::reset() { position = 0; }
-
 template <class T> Generator<T> *AppendGenerator<T>::clone() const {
     return new AppendGenerator<T>(*this);
 }

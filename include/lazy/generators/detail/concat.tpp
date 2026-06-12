@@ -26,8 +26,6 @@ template <class T> T ConcatGenerator<T>::get_next() {
     return value;
 }
 
-template <class T> void ConcatGenerator<T>::reset() { position = 0; }
-
 template <class T> Generator<T> *ConcatGenerator<T>::clone() const {
     return new ConcatGenerator<T>(*this);
 }

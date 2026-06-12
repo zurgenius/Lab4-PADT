@@ -27,8 +27,6 @@ template <class T> T PrependGenerator<T>::get_next() {
     return value;
 }
 
-template <class T> void PrependGenerator<T>::reset() { position = 0; }
-
 template <class T> Generator<T> *PrependGenerator<T>::clone() const {
     return new PrependGenerator<T>(*this);
 }

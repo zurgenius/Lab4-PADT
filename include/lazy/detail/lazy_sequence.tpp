@@ -195,10 +195,6 @@ template <class T> int LazySequence<T>::get_materialized_count() const {
     return cache.get_cache_count();
 }
 
-template <class T> int LazySequence<T>::get_history_capacity() const {
-    return cache.get_capacity();
-}
-
 template <class T> int LazySequence<T>::get_materialized_start() const {
     return cache.is_empty() ? 0 : cache.get_first_index();
 }

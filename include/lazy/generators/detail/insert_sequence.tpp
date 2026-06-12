@@ -52,8 +52,6 @@ template <class T> T InsertSequenceGenerator<T>::get_next() {
     return value;
 }
 
-template <class T> void InsertSequenceGenerator<T>::reset() { position = 0; }
-
 template <class T> Generator<T> *InsertSequenceGenerator<T>::clone() const {
     return new InsertSequenceGenerator<T>(*this);
 }

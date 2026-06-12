@@ -72,6 +72,14 @@ TEST(OnlineEventStatisticsTest, GetMaxMeasureReturnsMaximum) {
     EXPECT_DOUBLE_EQ(statistics.get_max_measure(), 5.0);
 }
 
+TEST(OnlineEventStatisticsTest, GetSumMeasureReturnsSum) {
+    OnlineEventStatistics<double> statistics;
+    statistics.add_event(Event<double>(EventType::Measure, 2.0, ""));
+    statistics.add_event(Event<double>(EventType::Measure, 4.0, ""));
+
+    EXPECT_DOUBLE_EQ(statistics.get_sum_measure(), 6.0);
+}
+
 TEST(OnlineEventStatisticsTest, GetAverageMeasureReturnsAverage) {
     OnlineEventStatistics<double> statistics;
     statistics.add_event(Event<double>(EventType::Measure, 2.0, ""));

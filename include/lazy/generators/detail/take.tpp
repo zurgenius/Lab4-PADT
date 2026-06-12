@@ -25,8 +25,6 @@ template <class T> T TakeGenerator<T>::get_next() {
     return value;
 }
 
-template <class T> void TakeGenerator<T>::reset() { position = 0; }
-
 template <class T> Generator<T> *TakeGenerator<T>::clone() const {
     return new TakeGenerator<T>(*this);
 }

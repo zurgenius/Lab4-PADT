@@ -42,7 +42,6 @@ template <class T> class LazySequence : public Sequence<T> {
     int get_count() const override;
     OrdinalLength get_length() const;
     int get_materialized_count() const;
-    int get_history_capacity() const;
     int get_materialized_start() const;
     bool is_infinite() const;
 
@@ -67,7 +66,6 @@ template <class T> class LazySequence : public Sequence<T> {
 };
 
 #include "lazy/generators/detail/base.tpp"
-#include "lazy/generators/detail/sequence.tpp"
 #include "lazy/generators/detail/rule.tpp"
 #include "lazy/generators/detail/append.tpp"
 #include "lazy/generators/detail/prepend.tpp"
