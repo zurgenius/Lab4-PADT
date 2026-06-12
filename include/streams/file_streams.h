@@ -5,6 +5,7 @@
 #include <fstream>
 #include <string>
 
+// Читает уже существующий файл построчно до обычного EOF.
 class FileLineReadOnlyStream : public ReadOnlyStream<std::string> {
   private:
     std::string filename;
@@ -23,6 +24,7 @@ class FileLineReadOnlyStream : public ReadOnlyStream<std::string> {
     void close() override;
 };
 
+// Записывает строки в файл с немедленным flush после каждой записи.
 class FileLineWriteOnlyStream : public WriteOnlyStream<std::string> {
   private:
     std::string filename;

@@ -4,11 +4,14 @@
 
 #include <stdexcept>
 
+// Создает поток построчного чтения из файла.
 inline FileLineReadOnlyStream::FileLineReadOnlyStream(const std::string &filename)
     : filename(filename), position(0), opened(false), ended(false) {}
 
+// Проверяет, закрыт ли файл или достигнут конец.
 inline bool FileLineReadOnlyStream::is_end_of_stream() const { return !opened || ended; }
 
+// Читает следующую строку файла или бросает ошибку.
 inline std::string FileLineReadOnlyStream::read() {
     if (!opened) {
         throw std::logic_error("File stream is closed");
@@ -22,6 +25,7 @@ inline std::string FileLineReadOnlyStream::read() {
     return line;
 }
 
+// Безопасно читает следующую строку файла.
 inline Option<std::string> FileLineReadOnlyStream::try_read() {
     if (!opened || ended) {
         return Option<std::string>::None();
@@ -35,6 +39,7 @@ inline Option<std::string> FileLineReadOnlyStream::try_read() {
     return Option<std::string>::Some(line);
 }
 
+// Открывает файл для чтения с начала.
 inline void FileLineReadOnlyStream::open() {
     close();
     file.open(filename.c_str());
@@ -46,6 +51,7 @@ inline void FileLineReadOnlyStream::open() {
     ended = false;
 }
 
+// Закрывает файл чтения.
 inline void FileLineReadOnlyStream::close() {
     if (file.is_open()) {
         file.close();
@@ -53,9 +59,11 @@ inline void FileLineReadOnlyStream::close() {
     opened = false;
 }
 
+// Создает поток построчной записи в файл.
 inline FileLineWriteOnlyStream::FileLineWriteOnlyStream(const std::string &filename)
     : filename(filename), position(0), opened(false) {}
 
+// Записывает строку в файл и сразу сбрасывает буфер.
 inline int FileLineWriteOnlyStream::write(const std::string &item) {
     if (!opened) {
         throw std::logic_error("File write stream is closed");
@@ -66,6 +74,7 @@ inline int FileLineWriteOnlyStream::write(const std::string &item) {
     return position;
 }
 
+// Открывает файл для записи с перезаписью содержимого.
 inline void FileLineWriteOnlyStream::open() {
     close();
     file.open(filename.c_str(), std::ios::out | std::ios::trunc);
@@ -76,6 +85,7 @@ inline void FileLineWriteOnlyStream::open() {
     opened = true;
 }
 
+// Закрывает файл записи.
 inline void FileLineWriteOnlyStream::close() {
     if (file.is_open()) {
         file.close();

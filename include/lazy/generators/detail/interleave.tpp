@@ -2,6 +2,7 @@
 
 #include <stdexcept>
 
+// Создает генератор кругового чередования нескольких lazy-источников.
 template <class T>
 InterleaveGenerator<T>::InterleaveGenerator(const LazySequence<T> **items, int count)
     : sources(nullptr), source_count(count), position(0), length(OrdinalLength::finite(0)) {
@@ -28,6 +29,7 @@ InterleaveGenerator<T>::InterleaveGenerator(const LazySequence<T> **items, int c
     length = has_infinite ? OrdinalLength::omega() : OrdinalLength::finite(finite_min * count);
 }
 
+// Копирует генератор interleave вместе со всеми источниками.
 template <class T>
 InterleaveGenerator<T>::InterleaveGenerator(const InterleaveGenerator<T> &other)
     : sources(new LazySequence<T> *[other.source_count]), source_count(other.source_count),
@@ -37,6 +39,7 @@ InterleaveGenerator<T>::InterleaveGenerator(const InterleaveGenerator<T> &other)
     }
 }
 
+// Освобождает все копии источников interleave.
 template <class T> InterleaveGenerator<T>::~InterleaveGenerator() {
     for (int index = 0; index < source_count; index++) {
         delete sources[index];
@@ -44,22 +47,27 @@ template <class T> InterleaveGenerator<T>::~InterleaveGenerator() {
     delete[] sources;
 }
 
+// Проверяет, остался ли следующий элемент в чередовании.
 template <class T> bool InterleaveGenerator<T>::has_next() const {
     return length.is_infinite() || position < length.get_finite_count();
 }
 
+// Возвращает следующий элемент кругового чередования.
 template <class T> T InterleaveGenerator<T>::get_next() {
     T value = get_at(OrdinalIndex::finite(position));
     position++;
     return value;
 }
 
+// Создает глубокую копию генератора interleave.
 template <class T> Generator<T> *InterleaveGenerator<T>::clone() const {
     return new InterleaveGenerator<T>(*this);
 }
 
+// Возвращает ординальную длину результата interleave.
 template <class T> OrdinalLength InterleaveGenerator<T>::get_length() const { return length; }
 
+// Возвращает элемент чередования по конечному индексу.
 template <class T> T InterleaveGenerator<T>::get_at(const OrdinalIndex &index) const {
     if (!index.is_finite()) {
         throw std::out_of_range("InterleaveGenerator supports finite indexes only");

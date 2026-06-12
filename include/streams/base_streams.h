@@ -2,6 +2,7 @@
 
 #include "option.h"
 
+// Базовый интерфейс последовательного чтения значений из источника.
 template <class T> class ReadOnlyStream {
   public:
     virtual bool is_end_of_stream() const = 0;
@@ -12,6 +13,7 @@ template <class T> class ReadOnlyStream {
     virtual ~ReadOnlyStream();
 };
 
+// Базовый интерфейс последовательной записи значений в приемник.
 template <class T> class WriteOnlyStream {
   public:
     virtual int write(const T &item) = 0;

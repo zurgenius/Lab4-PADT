@@ -5,6 +5,7 @@
 #include <fstream>
 #include <string>
 
+// Читает файл, который может дописываться другим процессом во время чтения.
 class LiveFileLineReadOnlyStream : public ReadOnlyStream<std::string> {
   private:
     std::string filename;

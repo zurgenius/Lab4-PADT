@@ -20,12 +20,12 @@ template <class T> class LazySequence : public Sequence<T> {
     LazySequence();
     LazySequence(const T *items, int count);
     LazySequence(const T *items, int count, int history_capacity);
-    explicit LazySequence(const Sequence<T> &source);
+    LazySequence(const Sequence<T> &source);
     LazySequence(const Sequence<T> &source, int history_capacity);
     LazySequence(T (*rule)(const Sequence<T> &source), const Sequence<T> &initial_values);
     LazySequence(T (*rule)(const Sequence<T> &source), const Sequence<T> &initial_values,
                  int history_capacity);
-    explicit LazySequence(Generator<T> *generator);
+    LazySequence(Generator<T> *generator);
     LazySequence(Generator<T> *generator, int history_capacity);
     LazySequence(const LazySequence<T> &other);
     LazySequence<T> &operator=(const LazySequence<T> &other);

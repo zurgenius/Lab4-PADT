@@ -2,6 +2,7 @@
 
 #include <stdexcept>
 
+// Создает пустой кольцевой кэш заданной вместимости.
 template <class T>
 Cache<T>::Cache(int capacity)
     : buffer(capacity), capacity(capacity), cached_count(0), first_physical_index(0),
@@ -11,6 +12,7 @@ Cache<T>::Cache(int capacity)
     }
 }
 
+// Копирует буфер и границы текущего окна кэша.
 template <class T>
 Cache<T>::Cache(const Cache<T> &other)
     : buffer(other.buffer), capacity(other.capacity), cached_count(other.cached_count),
@@ -18,6 +20,7 @@ Cache<T>::Cache(const Cache<T> &other)
       first_logical_index(other.first_logical_index),
       next_logical_index(other.next_logical_index) {}
 
+// Присваивает кэш вместе с содержимым и индексами кольцевого окна.
 template <class T> Cache<T> &Cache<T>::operator=(const Cache<T> &other) {
     if (this == &other) {
         return *this;
@@ -36,6 +39,7 @@ template <class T> Cache<T> &Cache<T>::operator=(const Cache<T> &other) {
     return *this;
 }
 
+// Переводит логический индекс последовательности в физическую ячейку буфера.
 template <class T> int Cache<T>::physical_index(int logical_index) const {
     if (!contains(logical_index)) {
         throw std::out_of_range("Index is outside Cache window");
@@ -43,8 +47,10 @@ template <class T> int Cache<T>::physical_index(int logical_index) const {
     return (first_physical_index + logical_index - first_logical_index) % capacity;
 }
 
+// Проверяет, что в окне кэша нет элементов.
 template <class T> bool Cache<T>::is_empty() const { return cached_count == 0; }
 
+// Проверяет, что логический индекс еще хранится в текущем окне.
 template <class T> bool Cache<T>::contains(int logical_index) const {
     if (cached_count == 0) {
         return false;
@@ -52,10 +58,13 @@ template <class T> bool Cache<T>::contains(int logical_index) const {
     return logical_index >= first_logical_index && logical_index <= get_last_index();
 }
 
+// Возвращает количество элементов в текущем окне кэша.
 template <class T> int Cache<T>::get_cache_count() const { return cached_count; }
 
+// Возвращает максимальную вместимость окна кэша.
 template <class T> int Cache<T>::get_capacity() const { return capacity; }
 
+// Возвращает логический индекс первого элемента в окне.
 template <class T> int Cache<T>::get_first_index() const {
     if (cached_count == 0) {
         throw std::out_of_range("Cache is empty");
@@ -63,6 +72,7 @@ template <class T> int Cache<T>::get_first_index() const {
     return first_logical_index;
 }
 
+// Возвращает логический индекс последнего элемента в окне.
 template <class T> int Cache<T>::get_last_index() const {
     if (cached_count == 0) {
         throw std::out_of_range("Cache is empty");
@@ -70,6 +80,7 @@ template <class T> int Cache<T>::get_last_index() const {
     return next_logical_index - 1;
 }
 
+// Добавляет элемент и при переполнении вытесняет самый старый.
 template <class T> void Cache<T>::push(const T &item) {
     if (cached_count < capacity) {
         int write_index = (first_physical_index + cached_count) % capacity;
@@ -83,6 +94,7 @@ template <class T> void Cache<T>::push(const T &item) {
     next_logical_index++;
 }
 
+// Возвращает первый элемент текущего окна кэша.
 template <class T> const T &Cache<T>::get_first() const {
     if (cached_count == 0) {
         throw std::out_of_range("Cache is empty");
@@ -90,6 +102,7 @@ template <class T> const T &Cache<T>::get_first() const {
     return get(first_logical_index);
 }
 
+// Возвращает последний элемент текущего окна кэша.
 template <class T> const T &Cache<T>::get_last() const {
     if (cached_count == 0) {
         throw std::out_of_range("Cache is empty");
@@ -97,6 +110,7 @@ template <class T> const T &Cache<T>::get_last() const {
     return get(next_logical_index - 1);
 }
 
+// Возвращает элемент окна по логическому индексу последовательности.
 template <class T> const T &Cache<T>::get(int index) const {
     return buffer.get(physical_index(index));
 }
@@ -113,6 +127,7 @@ template <class T> Option<T> Cache<T>::try_get(int index) const {
     return contains(index) ? Option<T>::Some(get(index)) : Option<T>::None();
 }
 
+// Возвращает общее количество элементов, прошедших через кэш.
 template <class T> int Cache<T>::get_count() const { return next_logical_index; }
 
 template <class T> Sequence<T> *Cache<T>::get_sub_sequence(int, int) {

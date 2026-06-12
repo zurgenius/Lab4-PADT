@@ -2,6 +2,7 @@
 
 #include <stdexcept>
 
+// Считает длину после вставки одной lazy-последовательности в другую.
 template <class T>
 OrdinalLength InsertSequenceGenerator<T>::calculate_length(const LazySequence<T> &source,
                                                            const LazySequence<T> &inserted,
@@ -19,6 +20,7 @@ OrdinalLength InsertSequenceGenerator<T>::calculate_length(const LazySequence<T>
     return OrdinalLength::add(source.get_length(), inserted.get_length());
 }
 
+// Создает генератор вставки lazy-последовательности.
 template <class T>
 InsertSequenceGenerator<T>::InsertSequenceGenerator(const LazySequence<T> &source,
                                                     const LazySequence<T> &inserted,
@@ -32,34 +34,41 @@ InsertSequenceGenerator<T>::InsertSequenceGenerator(const LazySequence<T> &sourc
     }
 }
 
+// Копирует генератор вставки вместе с обоими источниками.
 template <class T>
 InsertSequenceGenerator<T>::InsertSequenceGenerator(const InsertSequenceGenerator<T> &other)
     : source(new LazySequence<T>(*other.source)), inserted(new LazySequence<T>(*other.inserted)),
       insert_index(other.insert_index), position(other.position), length(other.length) {}
 
+// Освобождает копии исходной и вставляемой последовательностей.
 template <class T> InsertSequenceGenerator<T>::~InsertSequenceGenerator() {
     delete source;
     delete inserted;
 }
 
+// Проверяет, остался ли следующий элемент после вставки последовательности.
 template <class T> bool InsertSequenceGenerator<T>::has_next() const {
     return length.is_infinite() || position < length.get_finite_count();
 }
 
+// Возвращает следующий элемент результата вставки последовательности.
 template <class T> T InsertSequenceGenerator<T>::get_next() {
     T value = get_at(OrdinalIndex::finite(position));
     position++;
     return value;
 }
 
+// Создает глубокую копию генератора вставки последовательности.
 template <class T> Generator<T> *InsertSequenceGenerator<T>::clone() const {
     return new InsertSequenceGenerator<T>(*this);
 }
 
+// Возвращает ординальную длину результата вставки последовательности.
 template <class T> OrdinalLength InsertSequenceGenerator<T>::get_length() const {
     return length;
 }
 
+// Возвращает элемент результата вставки последовательности по индексу.
 template <class T> T InsertSequenceGenerator<T>::get_at(const OrdinalIndex &index) const {
     if (insert_index.is_finite() && index.is_finite()) {
         int insert_at = insert_index.get_finite_index();

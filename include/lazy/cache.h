@@ -10,10 +10,12 @@ template <class T> class Cache : public Sequence<T> {
     DynamicArray<T> buffer;
     int capacity;
     int cached_count;
+    // Физический индекс указывает ячейку кэша, логический - позицию в последовательности.
     int first_physical_index;
     int first_logical_index;
     int next_logical_index;
 
+    // Переводит индекс последовательности в текущую ячейку кольцевого буфера.
     int physical_index(int logical_index) const;
     int get_cache_count() const;
     int get_capacity() const;
@@ -23,6 +25,7 @@ template <class T> class Cache : public Sequence<T> {
   public:
     explicit Cache(int capacity = 50);
     Cache(const Cache<T> &other);
+    // Нужен для присваивания LazySequence вместе с текущим окном кэша.
     Cache<T> &operator=(const Cache<T> &other);
 
     bool is_empty() const;
@@ -36,6 +39,8 @@ template <class T> class Cache : public Sequence<T> {
     Option<T> try_get_last() const override;
     Option<T> try_get(int index) const override;
     int get_count() const override;
+
+    // Закрытые методы интерфейса Sequence: Cache их не поддерживает и бросает logic_error.
     Sequence<T> *get_sub_sequence(int start, int end) override;
     Sequence<T> *append(const T &item) override;
     Sequence<T> *prepend(const T &item) override;

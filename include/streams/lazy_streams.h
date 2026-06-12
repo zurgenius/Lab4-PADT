@@ -3,6 +3,7 @@
 #include "lazy/lazy_sequence.h"
 #include "streams/base_streams.h"
 
+// Читает LazySequence как поток, материализуя элементы только по мере чтения.
 template <class T> class LazyReadOnlyStream : public ReadOnlyStream<T> {
   private:
     const LazySequence<T> *source;

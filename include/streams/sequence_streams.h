@@ -3,6 +3,7 @@
 #include "sequence.h"
 #include "streams/base_streams.h"
 
+// Превращает конечную Sequence в поток последовательного чтения.
 template <class T> class SequenceReadOnlyStream : public ReadOnlyStream<T> {
   private:
     const Sequence<T> *source;
@@ -18,6 +19,7 @@ template <class T> class SequenceReadOnlyStream : public ReadOnlyStream<T> {
     void close() override;
 };
 
+// Превращает Sequence в приемник последовательной записи через append.
 template <class T> class SequenceWriteOnlyStream : public WriteOnlyStream<T> {
   private:
     Sequence<T> *target;
