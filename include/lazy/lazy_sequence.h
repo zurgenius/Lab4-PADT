@@ -57,5 +57,16 @@ template <class T> class LazySequence {
     static LazySequence<T> *interleave(const LazySequence<T> **sources, int source_count);
 };
 
-#include "lazy/detail/generators.tpp"
+#include "lazy/generators/detail/base.tpp"
+#include "lazy/generators/detail/sequence.tpp"
+#include "lazy/generators/detail/rule.tpp"
+#include "lazy/generators/detail/append.tpp"
+#include "lazy/generators/detail/prepend.tpp"
+#include "lazy/generators/detail/insert_item.tpp"
+#include "lazy/generators/detail/concat.tpp"
+#include "lazy/generators/detail/insert_sequence.tpp"
+#include "lazy/generators/detail/interleave.tpp"
+#include "lazy/generators/detail/map.tpp"
+#include "lazy/generators/detail/where.tpp"
+#include "lazy/generators/detail/take.tpp"
 #include "lazy/detail/lazy_sequence.tpp"
