@@ -34,7 +34,7 @@ template <class T> class EventReadOnlyStream : public ReadOnlyStream<Event<T>> {
     ReadOnlyStream<std::string> *source;
 
   public:
-    explicit EventReadOnlyStream(ReadOnlyStream<std::string> *source);
+    EventReadOnlyStream(ReadOnlyStream<std::string> *source);
 
     bool is_end_of_stream() const override;
     Event<T> read() override;

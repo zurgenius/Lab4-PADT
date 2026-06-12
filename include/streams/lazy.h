@@ -11,7 +11,7 @@ template <class T> class LazyReadOnlyStream : public ReadOnlyStream<T> {
     bool opened;
 
   public:
-    explicit LazyReadOnlyStream(const LazySequence<T> *source);
+    LazyReadOnlyStream(const LazySequence<T> *source);
 
     bool is_end_of_stream() const override;
     T read() override;

@@ -15,7 +15,7 @@ class FileLineReadOnlyStream : public ReadOnlyStream<std::string> {
     bool ended;
 
   public:
-    explicit FileLineReadOnlyStream(const std::string &filename);
+    FileLineReadOnlyStream(const std::string &filename);
 
     bool is_end_of_stream() const override;
     std::string read() override;
@@ -33,7 +33,7 @@ class FileLineWriteOnlyStream : public WriteOnlyStream<std::string> {
     bool opened;
 
   public:
-    explicit FileLineWriteOnlyStream(const std::string &filename);
+    FileLineWriteOnlyStream(const std::string &filename);
 
     int write(const std::string &item) override;
     void open() override;

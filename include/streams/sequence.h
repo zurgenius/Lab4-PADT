@@ -11,7 +11,7 @@ template <class T> class SequenceReadOnlyStream : public ReadOnlyStream<T> {
     bool opened;
 
   public:
-    explicit SequenceReadOnlyStream(const Sequence<T> *source);
+    SequenceReadOnlyStream(const Sequence<T> *source);
 
     bool is_end_of_stream() const override;
     T read() override;
@@ -27,7 +27,7 @@ template <class T> class SequenceWriteOnlyStream : public WriteOnlyStream<T> {
     bool opened;
 
   public:
-    explicit SequenceWriteOnlyStream(Sequence<T> *target);
+    SequenceWriteOnlyStream(Sequence<T> *target);
 
     int write(const T &item) override;
     void open() override;

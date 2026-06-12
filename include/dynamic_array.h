@@ -9,7 +9,7 @@ template <class T> class DynamicArray {
 
   public:
     DynamicArray();
-    explicit DynamicArray(int size);
+    DynamicArray(int size);
     DynamicArray(const T *items, int count);
     DynamicArray(const DynamicArray<T> &other);
 

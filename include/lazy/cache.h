@@ -23,7 +23,7 @@ template <class T> class Cache : public Sequence<T> {
     int get_last_index() const;
 
   public:
-    explicit Cache(int capacity = 50);
+    Cache(int capacity = 50);
     Cache(const Cache<T> &other);
     // Нужен для присваивания LazySequence вместе с текущим окном кэша.
     Cache<T> &operator=(const Cache<T> &other);

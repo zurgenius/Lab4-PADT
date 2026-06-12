@@ -37,7 +37,7 @@ template <class T> class LinkedList {
         Node *current;
 
       public:
-        explicit Enumerator(Node *head) : head(head), current(nullptr) {}
+        Enumerator(Node *head) : head(head), current(nullptr) {}
 
         bool move_next() override {
             if (current == nullptr) {
