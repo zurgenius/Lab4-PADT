@@ -26,6 +26,7 @@ add_library(lab2_warnings INTERFACE)
 target_compile_options(lab2_warnings INTERFACE ${LAB2_WARNING_FLAGS})
 
 add_library(lab2_core STATIC
+    src/ordinal.cpp
     src/utils.cpp
 )
 target_include_directories(lab2_core PUBLIC include)

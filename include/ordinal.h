@@ -45,5 +45,3 @@ class OrdinalLength {
 
     static OrdinalLength add(const OrdinalLength &left, const OrdinalLength &right);
 };
-
-#include "ordinal.tpp"
