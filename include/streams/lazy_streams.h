@@ -14,10 +14,6 @@ template <class T> class LazyReadOnlyStream : public ReadOnlyStream<T> {
 
     bool is_end_of_stream() const override;
     T read() override;
-    int get_position() const override;
-    bool can_seek() const override;
-    int seek(int index) override;
-    bool can_go_back() const override;
     void open() override;
     void close() override;
 };

@@ -46,16 +46,6 @@ inline Option<std::string> LiveFileLineReadOnlyStream::try_read() {
     return Option<std::string>::None();
 }
 
-inline int LiveFileLineReadOnlyStream::get_position() const { return position; }
-
-inline bool LiveFileLineReadOnlyStream::can_seek() const { return false; }
-
-inline int LiveFileLineReadOnlyStream::seek(int) {
-    throw std::logic_error("Live file stream cannot seek");
-}
-
-inline bool LiveFileLineReadOnlyStream::can_go_back() const { return false; }
-
 inline void LiveFileLineReadOnlyStream::open() {
     close();
     file.open(filename.c_str());

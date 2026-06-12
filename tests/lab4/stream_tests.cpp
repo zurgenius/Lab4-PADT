@@ -22,15 +22,6 @@ TEST(SequenceReadOnlyStreamTest, ReadReturnsFirstSequenceItem) {
     EXPECT_EQ(stream.read(), 7);
 }
 
-TEST(SequenceReadOnlyStreamTest, SeekChangesPosition) {
-    int items[] = {7, 8};
-    MutableArraySequence<int> sequence(items, 2);
-    SequenceReadOnlyStream<int> stream(&sequence);
-    stream.open();
-
-    EXPECT_EQ(stream.seek(1), 1);
-}
-
 TEST(SequenceWriteOnlyStreamTest, WriteAppendsItem) {
     MutableArraySequence<int> sequence;
     SequenceWriteOnlyStream<int> stream(&sequence);

@@ -199,8 +199,6 @@ template <class T> int LazySequence<T>::get_materialized_start() const {
     return cache.is_empty() ? 0 : cache.get_first_index();
 }
 
-template <class T> bool LazySequence<T>::is_infinite() const { return length.is_infinite(); }
-
 template <class T> Sequence<T> *LazySequence<T>::get_sub_sequence(int, int) {
     throw std::logic_error("get_sub_sequence() not supported on LazySequence");
 }

@@ -35,16 +35,6 @@ inline Option<std::string> FileLineReadOnlyStream::try_read() {
     return Option<std::string>::Some(line);
 }
 
-inline int FileLineReadOnlyStream::get_position() const { return position; }
-
-inline bool FileLineReadOnlyStream::can_seek() const { return false; }
-
-inline int FileLineReadOnlyStream::seek(int) {
-    throw std::logic_error("File line stream cannot seek");
-}
-
-inline bool FileLineReadOnlyStream::can_go_back() const { return false; }
-
 inline void FileLineReadOnlyStream::open() {
     close();
     file.open(filename.c_str());
@@ -75,8 +65,6 @@ inline int FileLineWriteOnlyStream::write(const std::string &item) {
     position++;
     return position;
 }
-
-inline int FileLineWriteOnlyStream::get_position() const { return position; }
 
 inline void FileLineWriteOnlyStream::open() {
     close();

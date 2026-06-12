@@ -23,20 +23,6 @@ template <class T> T SequenceReadOnlyStream<T>::read() {
     return source->get(position++);
 }
 
-template <class T> int SequenceReadOnlyStream<T>::get_position() const { return position; }
-
-template <class T> bool SequenceReadOnlyStream<T>::can_seek() const { return true; }
-
-template <class T> int SequenceReadOnlyStream<T>::seek(int index) {
-    if (index < 0 || index > source->get_count()) {
-        throw std::out_of_range("Seek index is out of range");
-    }
-    position = index;
-    return position;
-}
-
-template <class T> bool SequenceReadOnlyStream<T>::can_go_back() const { return true; }
-
 template <class T> void SequenceReadOnlyStream<T>::open() { opened = true; }
 
 template <class T> void SequenceReadOnlyStream<T>::close() { opened = false; }
@@ -58,8 +44,6 @@ template <class T> int SequenceWriteOnlyStream<T>::write(const T &item) {
     position++;
     return position;
 }
-
-template <class T> int SequenceWriteOnlyStream<T>::get_position() const { return position; }
 
 template <class T> void SequenceWriteOnlyStream<T>::open() { opened = true; }
 

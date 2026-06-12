@@ -19,10 +19,6 @@ class FileLineReadOnlyStream : public ReadOnlyStream<std::string> {
     bool is_end_of_stream() const override;
     std::string read() override;
     Option<std::string> try_read() override;
-    int get_position() const override;
-    bool can_seek() const override;
-    int seek(int index) override;
-    bool can_go_back() const override;
     void open() override;
     void close() override;
 };
@@ -38,7 +34,6 @@ class FileLineWriteOnlyStream : public WriteOnlyStream<std::string> {
     explicit FileLineWriteOnlyStream(const std::string &filename);
 
     int write(const std::string &item) override;
-    int get_position() const override;
     void open() override;
     void close() override;
 };

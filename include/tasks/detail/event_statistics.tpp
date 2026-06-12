@@ -73,18 +73,6 @@ template <class T> Option<Event<T>> EventReadOnlyStream<T>::try_read() {
     return Option<Event<T>>::Some(EventParser<T>::parse_line(line.get_value()));
 }
 
-template <class T> int EventReadOnlyStream<T>::get_position() const {
-    return source->get_position();
-}
-
-template <class T> bool EventReadOnlyStream<T>::can_seek() const { return source->can_seek(); }
-
-template <class T> int EventReadOnlyStream<T>::seek(int index) { return source->seek(index); }
-
-template <class T> bool EventReadOnlyStream<T>::can_go_back() const {
-    return source->can_go_back();
-}
-
 template <class T> void EventReadOnlyStream<T>::open() { source->open(); }
 
 template <class T> void EventReadOnlyStream<T>::close() { source->close(); }

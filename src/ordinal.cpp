@@ -2,8 +2,6 @@
 
 #include <stdexcept>
 
-OrdinalIndex::OrdinalIndex() : omega_count(0), finite_index(0) {}
-
 OrdinalIndex::OrdinalIndex(int omega_count, int finite_index)
     : omega_count(omega_count), finite_index(finite_index) {
     if (omega_count < 0) {
@@ -29,8 +27,6 @@ OrdinalIndex OrdinalIndex::omega_times(int omega_count, int finite_index) {
 
 bool OrdinalIndex::is_finite() const { return omega_count == 0; }
 
-bool OrdinalIndex::is_after_omega() const { return omega_count > 0; }
-
 int OrdinalIndex::get_omega_count() const { return omega_count; }
 
 int OrdinalIndex::get_finite_index() const { return finite_index; }
@@ -38,12 +34,6 @@ int OrdinalIndex::get_finite_index() const { return finite_index; }
 bool OrdinalIndex::operator==(const OrdinalIndex &other) const {
     return omega_count == other.omega_count && finite_index == other.finite_index;
 }
-
-bool OrdinalIndex::operator!=(const OrdinalIndex &other) const {
-    return !(*this == other);
-}
-
-OrdinalLength::OrdinalLength() : omega_count(0), finite_count(0) {}
 
 OrdinalLength::OrdinalLength(int omega_count, int finite_count)
     : omega_count(omega_count), finite_count(finite_count) {

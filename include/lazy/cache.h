@@ -5,6 +5,8 @@
 
 template <class T> class Cache : public Sequence<T> {
   private:
+    template <class U> friend class LazySequence;
+
     DynamicArray<T> buffer;
     int capacity;
     int cached_count;
@@ -13,6 +15,10 @@ template <class T> class Cache : public Sequence<T> {
     int next_logical_index;
 
     int physical_index(int logical_index) const;
+    int get_cache_count() const;
+    int get_capacity() const;
+    int get_first_index() const;
+    int get_last_index() const;
 
   public:
     explicit Cache(int capacity = 50);
@@ -21,10 +27,6 @@ template <class T> class Cache : public Sequence<T> {
 
     bool is_empty() const;
     bool contains(int logical_index) const;
-    int get_cache_count() const;
-    int get_capacity() const;
-    int get_first_index() const;
-    int get_last_index() const;
     void push(const T &item);
 
     const T &get_first() const override;

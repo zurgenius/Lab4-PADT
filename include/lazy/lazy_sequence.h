@@ -43,7 +43,6 @@ template <class T> class LazySequence : public Sequence<T> {
     OrdinalLength get_length() const;
     int get_materialized_count() const;
     int get_materialized_start() const;
-    bool is_infinite() const;
 
     Sequence<T> *get_sub_sequence(int start, int end) override;
     LazySequence<T> *append(const T &item) override;

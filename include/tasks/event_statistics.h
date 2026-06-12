@@ -39,10 +39,6 @@ template <class T> class EventReadOnlyStream : public ReadOnlyStream<Event<T>> {
     bool is_end_of_stream() const override;
     Event<T> read() override;
     Option<Event<T>> try_read() override;
-    int get_position() const override;
-    bool can_seek() const override;
-    int seek(int index) override;
-    bool can_go_back() const override;
     void open() override;
     void close() override;
 };

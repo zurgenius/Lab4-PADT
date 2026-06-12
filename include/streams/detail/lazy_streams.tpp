@@ -25,23 +25,6 @@ template <class T> T LazyReadOnlyStream<T>::read() {
     return source->get(position++);
 }
 
-template <class T> int LazyReadOnlyStream<T>::get_position() const { return position; }
-
-template <class T> bool LazyReadOnlyStream<T>::can_seek() const { return true; }
-
-template <class T> int LazyReadOnlyStream<T>::seek(int index) {
-    if (index < 0) {
-        throw std::out_of_range("Seek index is out of range");
-    }
-    if (source->get_length().is_finite() && index > source->get_length().get_finite_count()) {
-        throw std::out_of_range("Seek index is out of range");
-    }
-    position = index;
-    return position;
-}
-
-template <class T> bool LazyReadOnlyStream<T>::can_go_back() const { return true; }
-
 template <class T> void LazyReadOnlyStream<T>::open() { opened = true; }
 
 template <class T> void LazyReadOnlyStream<T>::close() { opened = false; }
